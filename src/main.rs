@@ -14,22 +14,27 @@ impl Tile {
 
 
 fn main() {
-    init_board(2, 2, 0);
+    init_board(4, 4, 1);
 }
 
-fn init_board (width: usize, height: usize, bombs: usize){
+fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     use Babylib::Vec2d;
     use rand::random_range;
     let density = bombs as f32 / ((width as f32) * (height as f32));
     let mut tiles = Vec2d::new::<Tile>(width.into(), height.into(),Tile::default());
 
-    for x in (0..width) {
+    let mut current_bombs = 0;
+    while current_bombs < bombs {
+        for x in (0..width) {
         for y in (0..height) {
-            if density > random_range(0.0..1.0) {
+            if density > random_range(0.0..1.0) && tiles[x][y].safe == true && current_bombs < bombs {
                 tiles[x][y].safe = false;
+                current_bombs += 1;
             }
-            println!("{:?}", tiles[x][y]);
+        }
         }
     }
+    
+    tiles
 }
 
