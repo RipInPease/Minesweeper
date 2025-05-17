@@ -6,7 +6,7 @@ struct Tile {
     surrounding_flags: u8,
 }
 
-impl Default for Tile {
+impl Tile {
     fn default () -> Tile {
         Tile{safe: true, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
     }
@@ -16,7 +16,7 @@ impl Default for Tile {
 fn main() {
     let width = 2;
     let height = 2;
-    let mut tiles = Babylib::Vec2d::new::<Tile>(width, height);
+    let mut tiles = Babylib::Vec2d::new::<Tile>(width, height,Tile::default());
 
     println!("{:?}", tiles);
 }

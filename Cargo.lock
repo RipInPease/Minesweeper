@@ -5,7 +5,7 @@ version = 4
 [[package]]
 name = "Babylib"
 version = "0.1.0"
-source = "git+https://github.com/RipInPease/Babylib.git#40a69a6e622db9ad75c8ce4df24f2507e336a30b"
+source = "git+https://github.com/RipInPease/Babylib.git#b45ab2d1a0658dc25e356e4dd2f289c76a334650"
 
 [[package]]
 name = "Minesweeper"
