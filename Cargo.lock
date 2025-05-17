@@ -8,6 +8,14 @@ version = "0.1.0"
 source = "git+https://github.com/RipInPease/Babylib.git#40a69a6e622db9ad75c8ce4df24f2507e336a30b"
 
 [[package]]
+name = "Minesweeper"
+version = "0.1.0"
+dependencies = [
+ "Babylib",
+ "rand",
+]
+
+[[package]]
 name = "bitflags"
 version = "2.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -36,14 +44,6 @@ name = "libc"
 version = "0.2.172"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
-
-[[package]]
-name = "minesweeper"
-version = "0.1.0"
-dependencies = [
- "Babylib",
- "rand",
-]
 
 [[package]]
 name = "ppv-lite86"
