@@ -5,6 +5,7 @@ version = 4
 [[package]]
 name = "babylib"
 version = "0.1.0"
+source = "git+https://github.com/RipInPease/Babylib.git#78366e33f36b53684f76e1e6e5251f2683f8c99b"
 
 [[package]]
 name = "bitflags"
