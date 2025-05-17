@@ -14,7 +14,12 @@ impl Tile {
 
 
 fn main() {
-    init_board(4, 4, 1);
+   let tiles = init_board(4, 4, 14);
+   for x in tiles {
+    for y in x {
+        println!("{:?}", y);
+    }
+   }
 }
 
 fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
@@ -34,7 +39,7 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
         }
         }
     }
-    
+
     tiles
 }
 
