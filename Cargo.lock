@@ -3,9 +3,9 @@
 version = 4
 
 [[package]]
-name = "babylib"
+name = "Babylib"
 version = "0.1.0"
-source = "git+https://github.com/RipInPease/Babylib.git#78366e33f36b53684f76e1e6e5251f2683f8c99b"
+source = "git+https://github.com/RipInPease/Babylib.git#40a69a6e622db9ad75c8ce4df24f2507e336a30b"
 
 [[package]]
 name = "bitflags"
@@ -41,7 +41,7 @@ checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
 name = "minesweeper"
 version = "0.1.0"
 dependencies = [
- "babylib",
+ "Babylib",
  "rand",
 ]
 

@@ -15,7 +15,7 @@ fn main() {
     let height = 2;
 
     init_board(2, 2, 27);
-    
+
 }
 
 fn init_board (width: u8, height: u8, bombs: usize){
@@ -27,7 +27,7 @@ fn init_board (width: u8, height: u8, bombs: usize){
 
     for y in (0..height) {
         for x in (0..width) {
-            println!("{:?}", tiles[x as usize][y as usize]);
+            //println!("{:?}", tiles[x as usize][y as usize]);
         }
     }
 }
