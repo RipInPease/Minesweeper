@@ -25,7 +25,5 @@ fn init_board (width: u8, height: u8, bombs: usize){
     use rand::random_range;
     let density = bombs as f32 / ((width as f32) * (height as f32));
     let x = random_range(0.0..1.0);
-
-  
 }
 
