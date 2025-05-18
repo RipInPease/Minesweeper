@@ -22,6 +22,8 @@ fn main() {
    }
 }
 
+
+//Given x, y and bombs: Create a tilemap
 fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     use Babylib::Vec2d;
     use rand::random_range;
@@ -30,10 +32,10 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
 
     let mut current_bombs = 0;
     while current_bombs < bombs {
-        for x in (0..width) {
-        for y in (0..height) {
+        for x in 0..width {
+        for y in 0..height {
             if density > random_range(0.0..1.0) && tiles[x][y].safe == true && current_bombs < bombs {
-                tiles[x][y].safe = false;
+                tiles = set_tile_as_bomb(tiles, x, y);
                 current_bombs += 1;
             }
         }
@@ -43,3 +45,14 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     tiles
 }
 
+
+//Set tile as bomb and surround bombs of surrounding tiles
+fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<Tile>> {
+    tiles[x][y].safe = false;
+
+    for sur_x in -1..2 {
+        println!("{sur_x}");
+    }
+
+    tiles
+}
