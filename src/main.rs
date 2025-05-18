@@ -50,8 +50,12 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
 fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<Tile>> {
     tiles[x][y].safe = false;
 
-    for sur_x in -1..2 {
-        println!("{sur_x}");
+    for sur_y in -1..2 {
+        for sur_x in -1..2 {
+            match tiles[x-sur_x][y-sur_y].get() {
+                _ => (),
+            }
+        }
     }
 
     tiles
