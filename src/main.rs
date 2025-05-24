@@ -51,8 +51,12 @@ fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<T
     tiles[x][y].safe = false;
 
     for sur_y in -1..2 {
+        if y == 0 && sur_y == -1 {continue};
+
         for sur_x in -1..2 {
-            match tiles[x-sur_x][y-sur_y].get() {
+            if x == 0 && sur_x == -1 {continue};
+
+            match tiles[(x as i32 - sur_x)as usize][(y as i32 - sur_y)as usize].get() {
                 _ => (),
             }
         }
