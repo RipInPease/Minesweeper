@@ -1,6 +1,6 @@
 #[derive(Clone, Debug)]
 struct Tile {
-    safe: bool,
+    is_bomb: bool,
     surrounding_bombs: u8,
     flagged: bool,
     surrounding_flags: u8,
@@ -8,18 +8,31 @@ struct Tile {
 
 impl Tile {
     fn default () -> Tile {
-        Tile{safe: true, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
+        Tile{is_bomb: false, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
     }
 }
 
 
 fn main() {
-   let tiles = init_board(4, 4, 14);
-   for x in tiles {
+   let tiles = init_board(10, 10, 3);
+
+   for x in &tiles {
+    println!("");
     for y in x {
-        println!("{:?}", y);
+        print!("{} ", y.is_bomb);
     }
    }
+
+   println!("");
+
+   for x in &tiles {
+    println!("");
+    for y in x {
+        print!("{} ", y.surrounding_bombs);
+    }
+   }
+
+   println!("");
 }
 
 
@@ -34,7 +47,7 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     while current_bombs < bombs {
         for x in 0..width {
         for y in 0..height {
-            if density > random_range(0.0..1.0) && tiles[x][y].safe == true && current_bombs < bombs {
+            if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && current_bombs < bombs {
                 tiles = set_tile_as_bomb(tiles, x, y);
                 current_bombs += 1;
             }
@@ -48,15 +61,22 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
 
 //Set tile as bomb and surround bombs of surrounding tiles
 fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<Tile>> {
-    tiles[x][y].safe = false;
+    //set tile as bombs
+    tiles[x][y].is_bomb = true;
 
+
+    //increase surrounding_bombs of surrounding tiles
     for sur_y in -1..2 {
-        if y == 0 && sur_y == -1 {continue};
+        let y_index = (y as i32 + sur_y) as usize;
 
         for sur_x in -1..2 {
-            if x == 0 && sur_x == -1 {continue};
+            let x_index = (x as i32 + sur_x) as usize;
 
-            match tiles[(x as i32 - sur_x)as usize][(y as i32 - sur_y)as usize].get() {
+            match tiles.get(x_index) {
+                Some(comlumn) => match comlumn.get(y_index) {
+                    Some(row) => tiles[x_index][y_index].surrounding_bombs += 1,
+                    _ => (),
+                },
                 _ => (),
             }
         }
