@@ -99,11 +99,11 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 //Flag tile, increment surrounding_flags of adjacent tiles
 fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
-    //Set tile as flagged
+    //Toggle flagged state
     tiles[x][y].flagged = !tiles[x][y].flagged;
 
+    //If you made tile to flagged, increment surrounding_flags of surrounding tiles
     if tiles[x][y].flagged {
-        //increase surrounding_flags of surrounding tiles
         for sur_y in -1..2 {
             let y_index = (y as i32 + sur_y) as usize;
 
@@ -121,6 +121,7 @@ fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
         }
     }
 
+    //If you made tile to not flagged, decrement surrounding_flags of surrounding tiles
     if !tiles[x][y].flagged {
         //increase surrounding_flags of surrounding tiles
         for sur_y in -1..2 {
