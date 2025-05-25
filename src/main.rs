@@ -18,6 +18,8 @@ fn main() {
    let tiles = init_board(10, 10, 20);
 
    print_tiles(&tiles);
+
+    //test
 }
 
 
