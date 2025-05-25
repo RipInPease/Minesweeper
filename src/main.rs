@@ -73,12 +73,10 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as open if safe, else: die
     if tiles[x][y].is_bomb {
         die();
-    } else {
-        tiles[x][y].is_bomb = true;
+    } else if !tiles[x][y].flagged {
+        tiles[x][y].is_opened = true;
     }
     
-
-
     //check if surrounding tile is 0
     for sur_y in -1..2 {
         let y_index = (y as i32 + sur_y) as usize;
@@ -99,6 +97,29 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 }
 
+//Open all adjacent tiles
+fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
+    //First check if you have correct number of surrounding_flag
+    if tiles[x][y].surrounding_flags == tiles[x][y].surrounding_bombs {
+
+        for sur_y in -1..2 {
+            let y_index = (y as i32 + sur_y) as usize;
+
+            for sur_x in -1..2 {
+                let x_index = (x as i32 + sur_x) as usize;
+
+                match tiles.get(x_index) {
+                    Some(comlumn) => match comlumn.get(y_index) {
+                        Some(_) => open_tile(tiles, x_index, y_index),
+                        _ => (),
+                    },
+                    _ => (),
+                }
+            }
+        }
+    }
+
+}
 //print tiles to termianl (is rotaed 90 degrees)
 fn print_tiles (tiles: &Vec<Vec<Tile>>) {
     for x in tiles {
