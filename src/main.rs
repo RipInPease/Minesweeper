@@ -43,7 +43,6 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     tiles
 }
 
-
 //Set tile as bomb and surrounding_bombs of surrounding tiles
 fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as bombs
@@ -69,7 +68,7 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 }
 
-//when tile is clicked on
+//When tile is clicked on, set as opened. If opened neighbor is 0, set neighbor as opened. RECURSION, BABY!!
 fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as open if safe, else: die
     if tiles[x][y].is_bomb {
@@ -100,7 +99,7 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 }
 
-
+//print tiles to termianl (is rotaed 90 degrees)
 fn print_tiles (tiles: &Vec<Vec<Tile>>) {
     for x in tiles {
         println!("");
@@ -125,6 +124,7 @@ fn print_tiles (tiles: &Vec<Vec<Tile>>) {
        println!("");
 }
 
+//Try again, loser
 fn die () {
     panic!("You died")
 }
