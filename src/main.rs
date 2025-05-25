@@ -1,6 +1,6 @@
 #[derive(Clone, Debug)]
 struct Tile {
-    is_opened: bool,
+    opened: bool,
     is_bomb: bool,
     surrounding_bombs: u8,
     flagged: bool,
@@ -9,7 +9,7 @@ struct Tile {
 
 impl Tile {
     fn default () -> Tile {
-        Tile{is_opened: false, is_bomb: false, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
+        Tile{opened: false, is_bomb: false, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
     }
 }
 
@@ -74,7 +74,7 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     if tiles[x][y].is_bomb {
         die();
     } else if !tiles[x][y].flagged {
-        tiles[x][y].is_opened = true;
+        tiles[x][y].opened = true;
     }
     
     //check if surrounding tile is 0
@@ -97,10 +97,54 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 }
 
+//Flag tile, increment surrounding_flags of adjacent tiles
+fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
+    //Set tile as flagged
+    tiles[x][y].flagged = !tiles[x][y].flagged;
+
+    if tiles[x][y].flagged {
+        //increase surrounding_flags of surrounding tiles
+        for sur_y in -1..2 {
+            let y_index = (y as i32 + sur_y) as usize;
+
+            for sur_x in -1..2 {
+                let x_index = (x as i32 + sur_x) as usize;
+
+                match tiles.get(x_index) {
+                    Some(comlumn) => match comlumn.get(y_index) {
+                        Some(_) => tiles[x_index][y_index].surrounding_flags += 1,
+                        _ => (),
+                    },
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    if !tiles[x][y].flagged {
+        //increase surrounding_flags of surrounding tiles
+        for sur_y in -1..2 {
+            let y_index = (y as i32 + sur_y) as usize;
+
+            for sur_x in -1..2 {
+                let x_index = (x as i32 + sur_x) as usize;
+
+                match tiles.get(x_index) {
+                    Some(comlumn) => match comlumn.get(y_index) {
+                        Some(_) => tiles[x_index][y_index].surrounding_flags -= 1,
+                        _ => (),
+                    },
+                    _ => (),
+                }
+            }
+        }
+    }
+}
+
 //Open all adjacent tiles
 fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
-    //First check if you have correct number of surrounding_flag
-    if tiles[x][y].surrounding_flags == tiles[x][y].surrounding_bombs {
+    //First check if you have correct number of surrounding_flag and tile is opened
+    if tiles[x][y].surrounding_flags == tiles[x][y].surrounding_bombs && tiles[x][y].opened {
 
         for sur_y in -1..2 {
             let y_index = (y as i32 + sur_y) as usize;
@@ -120,6 +164,7 @@ fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 
 }
+
 //print tiles to termianl (is rotaed 90 degrees)
 fn print_tiles (tiles: &Vec<Vec<Tile>>) {
     for x in tiles {
