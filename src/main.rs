@@ -1,5 +1,6 @@
 #[derive(Clone, Debug)]
 struct Tile {
+    is_opened: bool,
     is_bomb: bool,
     surrounding_bombs: u8,
     flagged: bool,
@@ -8,13 +9,13 @@ struct Tile {
 
 impl Tile {
     fn default () -> Tile {
-        Tile{is_bomb: false, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
+        Tile{is_opened: false, is_bomb: false, surrounding_bombs: 0, flagged: false, surrounding_flags: 0}
     }
 }
 
 
 fn main() {
-   let tiles = init_board(10, 10, 100);
+   let tiles = init_board(10, 10, 20);
 
    print_tiles(&tiles);
 }
@@ -68,12 +69,47 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 }
 
+//when tile is clicked on
+fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
+    //set tile as open if safe, else: die
+    if tiles[x][y].is_bomb {
+        die();
+    } else {
+        tiles[x][y].is_bomb = true;
+    }
+    
+
+
+    //check if surrounding tile is 0
+    for sur_y in -1..2 {
+        let y_index = (y as i32 + sur_y) as usize;
+
+        for sur_x in -1..2 {
+            let x_index = (x as i32 + sur_x) as usize;
+
+            match tiles.get(x_index) {
+                Some(comlumn) => match comlumn.get(y_index) {
+                    Some(_) => if tiles[x_index][y_index].surrounding_bombs == 0 {
+                        open_tile(tiles, x_index, y_index);
+                    },
+                    _ => (),
+                },
+                _ => (),
+            }
+        }
+    }
+}
+
 
 fn print_tiles (tiles: &Vec<Vec<Tile>>) {
     for x in tiles {
         println!("");
         for y in x {
-            print!("{} ", y.is_bomb);
+            if y.is_bomb {
+                print!("1 ");
+            } else {
+                print!("0 ");
+            }
         }
        }
     
@@ -87,4 +123,8 @@ fn print_tiles (tiles: &Vec<Vec<Tile>>) {
        }
     
        println!("");
+}
+
+fn die () {
+    panic!("You died")
 }
