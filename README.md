@@ -1,1 +1,1 @@
-# Minesweeper
+The amalgamation of Rust and JavaShit
