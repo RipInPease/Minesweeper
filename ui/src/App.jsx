@@ -1,12 +1,21 @@
-import { useState } from 'react';
 import './App.css';
+import GameGrid from './components/game-grid';
 
 export default function App() {
-  const [count, setCount] = useState(0)
+
+  const object = [
+    [0, 1, 0, 0, 1, 1],
+    [1, 0, 0, 1, 1, 0],
+    [0, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 0, 1]
+  ];
 
   return (
-    <>
-      <p>Halla</p>
-    </>
+    <div className='app'>
+      <div className="app-content">
+        <GameGrid gameRows={object} />
+      </div>
+    </div>
   )
 }

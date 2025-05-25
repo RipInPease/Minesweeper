@@ -1,0 +1,23 @@
+.game-grid {
+    border: solid 1px rgba(0, 0, 0, .1);
+    max-width: 300px;
+    width: 100%;
+    background-color: white;
+}
+
+.row {
+    border: solid 1px rgba(0, 0, 0, .1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.row-block {
+    border: solid 1px rgba(0, 0, 0, .1);
+    padding: 5px;
+    width: 100%;
+    font-size: 24px;
+    border-radius: 0;
+    background-color: transparent;
+}
