@@ -75,23 +75,23 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
         die();
     } else if !tiles[x][y].flagged {
         tiles[x][y].opened = true;
-    }
     
-    //check if surrounding tile is 0
-    for sur_y in -1..2 {
-        let y_index = (y as i32 + sur_y) as usize;
+        //check if surrounding tile is 0
+        for sur_y in -1..2 {
+            let y_index = (y as i32 + sur_y) as usize;
 
-        for sur_x in -1..2 {
-            let x_index = (x as i32 + sur_x) as usize;
+            for sur_x in -1..2 {
+                let x_index = (x as i32 + sur_x) as usize;
 
-            match tiles.get(x_index) {
-                Some(comlumn) => match comlumn.get(y_index) {
-                    Some(_) => if tiles[x_index][y_index].surrounding_bombs == 0 {
-                        open_tile(tiles, x_index, y_index);
+                match tiles.get(x_index) {
+                    Some(comlumn) => match comlumn.get(y_index) {
+                        Some(_) => if tiles[x_index][y_index].surrounding_bombs == 0 {
+                            open_tile(tiles, x_index, y_index);
+                        },
+                        _ => (),
                     },
                     _ => (),
-                },
-                _ => (),
+                }
             }
         }
     }
