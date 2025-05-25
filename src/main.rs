@@ -14,25 +14,9 @@ impl Tile {
 
 
 fn main() {
-   let tiles = init_board(10, 10, 3);
+   let tiles = init_board(10, 10, 100);
 
-   for x in &tiles {
-    println!("");
-    for y in x {
-        print!("{} ", y.is_bomb);
-    }
-   }
-
-   println!("");
-
-   for x in &tiles {
-    println!("");
-    for y in x {
-        print!("{} ", y.surrounding_bombs);
-    }
-   }
-
-   println!("");
+   print_tiles(&tiles);
 }
 
 
@@ -48,7 +32,7 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
         for x in 0..width {
         for y in 0..height {
             if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && current_bombs < bombs {
-                tiles = set_tile_as_bomb(tiles, x, y);
+                set_tile_as_bomb(&mut tiles, x, y);
                 current_bombs += 1;
             }
         }
@@ -59,8 +43,8 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
 }
 
 
-//Set tile as bomb and surround bombs of surrounding tiles
-fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<Tile>> {
+//Set tile as bomb and surrounding_bombs of surrounding tiles
+fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as bombs
     tiles[x][y].is_bomb = true;
 
@@ -74,7 +58,7 @@ fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<T
 
             match tiles.get(x_index) {
                 Some(comlumn) => match comlumn.get(y_index) {
-                    Some(row) => tiles[x_index][y_index].surrounding_bombs += 1,
+                    Some(_) => tiles[x_index][y_index].surrounding_bombs += 1,
                     _ => (),
                 },
                 _ => (),
@@ -82,5 +66,25 @@ fn set_tile_as_bomb (mut tiles: Vec<Vec<Tile>>, x: usize, y: usize) -> Vec<Vec<T
         }
     }
 
-    tiles
+}
+
+
+fn print_tiles (tiles: &Vec<Vec<Tile>>) {
+    for x in tiles {
+        println!("");
+        for y in x {
+            print!("{} ", y.is_bomb);
+        }
+       }
+    
+       println!("");
+    
+       for x in tiles {
+        println!("");
+        for y in x {
+            print!("{} ", y.surrounding_bombs);
+        }
+       }
+    
+       println!("");
 }
