@@ -15,7 +15,7 @@ impl Tile {
 
 
 fn main() {
-   let tiles = init_board(10, 10, 20);
+   let tiles = init_board(5, 6, 7);
 
    print_tiles(&tiles);
 }
@@ -166,29 +166,32 @@ fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 }
 
-//print tiles to termianl (is rotaed 90 degrees)
+//print tiles to terminal
 fn print_tiles (tiles: &Vec<Vec<Tile>>) {
-    for x in tiles {
-        println!("");
-        for y in x {
-            if y.is_bomb {
-                print!("1 ");
-            } else {
-                print!("0 ");
-            }
-        }
-       }
-    
-       println!("");
-    
-       for x in tiles {
-        println!("");
-        for y in x {
-            print!("{} ", y.surrounding_bombs);
-        }
-       }
-    
-       println!("");
+    let width = tiles.len();
+    let height = tiles[0].len();
+
+    //print if tile is bomb or safe
+    for y_index in 0..height {
+      for x_index in 0..width {
+          if tiles[x_index][y_index].is_bomb {
+            print!("1 ");
+          } else {
+            print!("0 ");
+          }
+      }
+      println!("");
+    }
+
+    println!("");
+
+    //print surrounding bombs
+    for y_index in 0..height {
+        for x_index in 0..width {
+          print!("{} ", tiles[x_index][y_index].surrounding_bombs)
+          }    
+     println!("");
+    }
 }
 
 //Try again, loser
