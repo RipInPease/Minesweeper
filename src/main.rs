@@ -15,7 +15,7 @@ impl Tile {
 
 
 fn main() {
-   let tiles = init_board(5, 6, 7);
+   let tiles = init_board(10, 6, 40);
 
    print_tiles(&tiles);
 }
@@ -25,14 +25,22 @@ fn main() {
 fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     use Babylib::Vec2d;
     use rand::random_range;
-    let density = bombs as f32 / ((width as f32) * (height as f32));
+
+    let mut used_bombs = bombs;
+
+    if bombs > width * height {
+        used_bombs = (width * height)-1;
+
+        println!{"You chose more bombs than can fit in the grid, bombs set to 1 less than grid size"}
+    }
+    let density = used_bombs as f32 / ((width as f32) * (height as f32));
     let mut tiles = Vec2d::new::<Tile>(width.into(), height.into(),Tile::default());
 
     let mut current_bombs = 0;
-    while current_bombs < bombs {
+    while current_bombs < used_bombs {
         for x in 0..width {
         for y in 0..height {
-            if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && current_bombs < bombs {
+            if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && current_bombs < used_bombs {
                 set_tile_as_bomb(&mut tiles, x, y);
                 current_bombs += 1;
             }
