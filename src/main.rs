@@ -1,11 +1,10 @@
-use std::io::stdout;
+use std::io::{Write, stdout};
 use core::time::Duration;
-use crossterm::event::{poll, Event};
-use crossterm::{self};
-use crossterm::terminal::{self, };
-use crossterm::event::{self, read};
-use crossterm::cursor::{self, };
-use crossterm::style::{self, };
+use crossterm::{self, QueueableCommand};
+use crossterm::event::{self, read, poll, Event, KeyCode, KeyModifiers};
+use crossterm::terminal::{self, Clear, ClearType};
+use crossterm::cursor::{self, MoveTo};
+use crossterm::style::{self, Print, StyledContent, Stylize};
 
 
 
@@ -30,21 +29,36 @@ impl Tile {
 
 fn main() {
     let mut stdout = stdout();
+    terminal::enable_raw_mode().unwrap();
+    stdout.queue(cursor::Hide).unwrap()
+          .queue(Clear(ClearType::All)).unwrap()
+          .flush().unwrap();
 
-    let tiles = init_board(10, 6, 40);
-    let mut cursor_position: (u16, u16);
+  
+
+    let mut tiles = init_board(10, 6, 40);
+    let mut cursor_position: (u16, u16) = (12, 12);
     
     loop {
         while poll(Duration::ZERO).unwrap() {
             match read().unwrap() {
-                Event::Key(key_event) => handle_input(key_event),
+                Event::Key(key_event) => match key_event.code {
+                    //Up/Down/Left/Right/Open/Chording and quitting
+                    KeyCode::Up => if cursor_position.1 > 0 {cursor_position.1 -= 1},
+                    KeyCode::Down => if cursor_position.1 < 20 {cursor_position.1 += 1},
+                    KeyCode::Left => if cursor_position.0 > 0 {cursor_position.0 -= 1},
+                    KeyCode::Right => if cursor_position.0 < 20 {cursor_position.0 += 1},
+                    KeyCode::Enter => (),
+                    KeyCode::Char('c') => if key_event.modifiers.contains(KeyModifiers::CONTROL) {die("You quit")} //CTRL+C to quit,
+                    _ => (),
+                    },
                 _ => (),
             }
         
         }
-    }
 
-   print_tiles(&tiles);
+        draw_page(&tiles, &cursor_position);
+    }
 }
 
 
@@ -103,19 +117,11 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 }
 
-//Handle user input, moving cursor and such
-fn handle_input (key_event: event::KeyEvent) {
-
-}
-
-
-
-
 //When tile is clicked on, set as opened. If opened neighbor is 0, set neighbor as opened. RECURSION, BABY!!
 fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as open if safe, else: die
     if tiles[x][y].is_bomb {
-        die();
+        die("You exploded");
     } else if !tiles[x][y].flagged {
         tiles[x][y].opened = true;
     
@@ -239,10 +245,35 @@ fn print_tiles (tiles: &Vec<Vec<Tile>>) {
 
 //Draw page to terminal
 fn draw_page(tiles: &Vec<Vec<Tile>>, cursor_position: &(u16, u16)) {
+    let mut stdout = stdout();
 
+    let width = tiles.len() as u16;
+    let height = tiles[0].len() as u16;
+
+
+    for y in 0..height {
+        for x in 0..width {
+            stdout
+            .queue(MoveTo(x, y)).unwrap()
+            .queue(Print("-".white().on_dark_grey())).unwrap();
+        }
+    }
+
+    stdout
+            .queue(MoveTo(cursor_position.0, cursor_position.1)).unwrap()
+            .queue(Print("-".blue().on_dark_grey())).unwrap();
+
+    stdout.flush().unwrap();
 }
 
 //Try again, loser
-fn die () {
-    panic!("You died")
+fn die (message: &str) {
+    //Disable raw mode, show cursor, crash program
+    let mut stdout = stdout();
+    terminal::disable_raw_mode().unwrap();
+    stdout.queue(Clear(ClearType::All)).unwrap()
+          .queue(cursor::Show).unwrap();
+    stdout.flush().unwrap();
+
+    panic!("{}", message)
 }
