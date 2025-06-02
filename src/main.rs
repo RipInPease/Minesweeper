@@ -1,4 +1,5 @@
 use std::io::{Write, stdout};
+use std::thread::sleep;
 use core::time::Duration;
 use crossterm::{self, QueueableCommand};
 use crossterm::event::{self, read, poll, Event, KeyCode, KeyModifiers};
@@ -36,19 +37,21 @@ fn main() {
 
   
 
-    let mut tiles = init_board(10, 6, 40);
-    let mut cursor_position: (u16, u16) = (12, 12);
+    let mut tiles = init_board(10, 10, 2);
+    let mut cursor: (u16, u16) = (0, 0);
     
     loop {
-        while poll(Duration::ZERO).unwrap() {
+        if poll(Duration::ZERO).unwrap() {
             match read().unwrap() {
                 Event::Key(key_event) => match key_event.code {
                     //Up/Down/Left/Right/Open/Chording and quitting
-                    KeyCode::Up => if cursor_position.1 > 0 {cursor_position.1 -= 1},
-                    KeyCode::Down => if cursor_position.1 < 20 {cursor_position.1 += 1},
-                    KeyCode::Left => if cursor_position.0 > 0 {cursor_position.0 -= 1},
-                    KeyCode::Right => if cursor_position.0 < 20 {cursor_position.0 += 1},
-                    KeyCode::Enter => (),
+                    KeyCode::Up => if cursor.1 > 0 {cursor.1 -= 1},
+                    KeyCode::Down => if cursor.1 < tiles[0].len() as u16 -1 {cursor.1 += 1},
+                    KeyCode::Left => if cursor.0 > 0 {cursor.0 -= 1},
+                    KeyCode::Right => if cursor.0 < tiles.len() as u16 -1 {cursor.0 += 1},
+                    KeyCode::Enter => if tiles[cursor.0 as usize][cursor.1 as usize].opened 
+                                            {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
+                                      else  {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())},
                     KeyCode::Char('c') => if key_event.modifiers.contains(KeyModifiers::CONTROL) {die("You quit")} //CTRL+C to quit,
                     _ => (),
                     },
@@ -57,7 +60,9 @@ fn main() {
         
         }
 
-        draw_page(&tiles, &cursor_position);
+        draw_page(&tiles, &cursor);
+
+        sleep(Duration::from_millis(300));
     }
 }
 
@@ -244,7 +249,7 @@ fn print_tiles (tiles: &Vec<Vec<Tile>>) {
 }
 
 //Draw page to terminal
-fn draw_page(tiles: &Vec<Vec<Tile>>, cursor_position: &(u16, u16)) {
+fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
     let mut stdout = stdout();
 
     let width = tiles.len() as u16;
@@ -253,14 +258,29 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor_position: &(u16, u16)) {
 
     for y in 0..height {
         for x in 0..width {
-            stdout
-            .queue(MoveTo(x, y)).unwrap()
-            .queue(Print("-".white().on_dark_grey())).unwrap();
+            stdout.queue(MoveTo(x, y)).unwrap();
+
+            if tiles[x as usize][y as usize].opened {
+                match tiles[x as usize][y as usize].surrounding_bombs {
+                    1 => stdout.queue(Print("1".blue().on_dark_grey())).unwrap(),
+                    2 => stdout.queue(Print("2".green().on_dark_grey())).unwrap(),
+                    3 => stdout.queue(Print("3".red().on_dark_grey())).unwrap(),
+                    4 => stdout.queue(Print("4".dark_blue().on_dark_grey())).unwrap(),
+                    5 => stdout.queue(Print("5".dark_red().on_dark_grey())).unwrap(),
+                    6 => stdout.queue(Print("6".cyan().on_dark_grey())).unwrap(),
+                    7 => stdout.queue(Print("7".black().on_dark_grey())).unwrap(),
+                    _ => stdout.queue(Print("8".yellow().on_dark_grey())).unwrap(),
+                };
+            } else {
+                stdout
+                .queue(MoveTo(x, y)).unwrap()
+                .queue(Print("-".white().on_dark_grey())).unwrap();
+            }
         }
     }
 
     stdout
-            .queue(MoveTo(cursor_position.0, cursor_position.1)).unwrap()
+            .queue(MoveTo(cursor.0, cursor.1)).unwrap()
             .queue(Print("-".blue().on_dark_grey())).unwrap();
 
     stdout.flush().unwrap();
