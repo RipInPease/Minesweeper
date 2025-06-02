@@ -1,3 +1,17 @@
+use std::io::stdout;
+use core::time::Duration;
+use crossterm::event::{poll, Event};
+use crossterm::{self};
+use crossterm::terminal::{self, };
+use crossterm::event::{self, read};
+use crossterm::cursor::{self, };
+use crossterm::style::{self, };
+
+
+
+
+
+
 #[derive(Clone, Debug)]
 struct Tile {
     opened: bool,
@@ -15,7 +29,20 @@ impl Tile {
 
 
 fn main() {
-   let tiles = init_board(10, 6, 40);
+    let mut stdout = stdout();
+
+    let tiles = init_board(10, 6, 40);
+    let mut cursor_position: (u16, u16);
+    
+    loop {
+        while poll(Duration::ZERO).unwrap() {
+            match read().unwrap() {
+                Event::Key(key_event) => handle_input(key_event),
+                _ => (),
+            }
+        
+        }
+    }
 
    print_tiles(&tiles);
 }
@@ -75,6 +102,14 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 
 }
+
+//Handle user input, moving cursor and such
+fn handle_input (key_event: event::KeyEvent) {
+
+}
+
+
+
 
 //When tile is clicked on, set as opened. If opened neighbor is 0, set neighbor as opened. RECURSION, BABY!!
 fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
@@ -200,6 +235,11 @@ fn print_tiles (tiles: &Vec<Vec<Tile>>) {
           }    
      println!("");
     }
+}
+
+//Draw page to terminal
+fn draw_page(tiles: &Vec<Vec<Tile>>, cursor_position: &(u16, u16)) {
+
 }
 
 //Try again, loser
