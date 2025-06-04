@@ -100,7 +100,7 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     tiles
 }
 
-//Set tile as bomb and surrounding_bombs of surrounding tiles
+//Set tile as bomb and increment surrounding_bombs of surrounding tiles
 fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //set tile as bombs
     tiles[x][y].is_bomb = true;
@@ -125,17 +125,18 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 }
 
-//When tile is clicked on, set as opened. If opened neighbor is 0, set neighbor as opened. RECURSION, BABY!!
+//When tile is clicked on, set as opened. If opened tile is 0, chord it
 fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
-    if tiles[x][y].opened {
+    if tiles[x][y].opened || tiles[x][y].flagged {
         return;
     }
+        
 
     //set tile as open if safe, else: die
     if tiles[x][y].is_bomb {
         die("You exploded");
-    } else if !tiles[x][y].flagged {
+    } else {
         tiles[x][y].opened = true;
     
         //check if surrounding tile is 0
@@ -145,7 +146,7 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 }
 
-//Flag tile, increment surrounding_flags of adjacent tiles
+//Flag tile, increment surrounding_flags of surrounding tiles
 fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //Toggle flagged state
     tiles[x][y].flagged = !tiles[x][y].flagged;
@@ -190,7 +191,7 @@ fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     }
 }
 
-//Open all adjacent tiles
+//Open all surrounding tiles
 fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
     //First check if you have correct number of surrounding_flag and tile is opened
     if tiles[x][y].surrounding_flags == tiles[x][y].surrounding_bombs && tiles[x][y].opened {
@@ -260,6 +261,7 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
                 stdout.queue(SetAttribute(Attribute::Reset)).unwrap();
             }
 
+            //Draw numbers
             if tiles[x as usize][y as usize].opened {
                 match tiles[x as usize][y as usize].surrounding_bombs {
                     0 => stdout.queue(Print(" ".on_dark_grey())).unwrap(),
@@ -272,10 +274,12 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
                     7 => stdout.queue(Print("7".black().on_dark_grey())).unwrap(),
                     _ => stdout.queue(Print("8".yellow().on_dark_grey())).unwrap(),
                 };
+            //Draw flag
             } else if tiles[x as usize][y as usize].flagged {
                 stdout
                 .queue(MoveTo(x, y)).unwrap()
                 .queue(Print("-".red().on_dark_grey())).unwrap();
+            //Draw unopened, unflagged tiles
             } else {
                 stdout
                 .queue(MoveTo(x, y)).unwrap()
@@ -283,10 +287,6 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
             }
         }
     }
-
-    //stdout
-    //        .queue(MoveTo(cursor.0, cursor.1)).unwrap()
-    //        .queue(Print("-".blue().on_dark_grey())).unwrap();
 
     stdout.flush().unwrap();
 }
