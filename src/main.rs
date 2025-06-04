@@ -37,7 +37,7 @@ fn main() {
 
   
 
-    let mut tiles = init_board(10, 10, 2);
+    let mut tiles = init_board(4, 4, 2);
     let mut cursor: (u16, u16) = (0, 0);
     
     loop {
@@ -59,6 +59,8 @@ fn main() {
             }
         
         }
+
+        //print_tiles(&tiles);
 
         draw_page(&tiles, &cursor);
 
@@ -124,6 +126,11 @@ fn set_tile_as_bomb (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 //When tile is clicked on, set as opened. If opened neighbor is 0, set neighbor as opened. RECURSION, BABY!!
 fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
+
+    if tiles[x][y].opened {
+        return;
+    }
+
     //set tile as open if safe, else: die
     if tiles[x][y].is_bomb {
         die("You exploded");
@@ -131,22 +138,8 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
         tiles[x][y].opened = true;
     
         //check if surrounding tile is 0
-        for sur_y in -1..2 {
-            let y_index = (y as i32 + sur_y) as usize;
-
-            for sur_x in -1..2 {
-                let x_index = (x as i32 + sur_x) as usize;
-
-                match tiles.get(x_index) {
-                    Some(comlumn) => match comlumn.get(y_index) {
-                        Some(_) => if tiles[x_index][y_index].surrounding_bombs == 0 {
-                            open_tile(tiles, x_index, y_index);
-                        },
-                        _ => (),
-                    },
-                    _ => (),
-                }
-            }
+        if tiles[x][y].surrounding_bombs == 0 {
+            chord(tiles, x, y);
         }
     }
 }
@@ -262,6 +255,7 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
 
             if tiles[x as usize][y as usize].opened {
                 match tiles[x as usize][y as usize].surrounding_bombs {
+                    0 => stdout.queue(Print("0".blue().on_dark_grey())).unwrap(),
                     1 => stdout.queue(Print("1".blue().on_dark_grey())).unwrap(),
                     2 => stdout.queue(Print("2".green().on_dark_grey())).unwrap(),
                     3 => stdout.queue(Print("3".red().on_dark_grey())).unwrap(),
