@@ -65,7 +65,7 @@ fn main() {
 
         draw_page(&tiles, &cursor);
 
-        sleep(Duration::from_millis(300));
+        sleep(Duration::from_millis(16));
     }
 }
 
