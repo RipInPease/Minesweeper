@@ -1,4 +1,4 @@
-use std::io::{Write, stdout};
+use std::io::{self, Write, stdout};
 use std::thread::sleep;
 use core::time::Duration;
 use crossterm::{self, QueueableCommand};
@@ -29,6 +29,8 @@ impl Tile {
 
 
 fn main() {
+    let (width, height, bombs) = set_size();
+    
     let mut stdout = stdout();
     terminal::enable_raw_mode().unwrap();
     stdout.queue(cursor::Hide).unwrap()
@@ -37,7 +39,7 @@ fn main() {
 
   
 
-    let mut tiles = init_board(4, 4, 2);
+    let mut tiles = init_board(width, height, bombs);
     let mut cursor: (u16, u16) = (0, 0);
     
     loop {
@@ -69,7 +71,33 @@ fn main() {
     }
 }
 
+//Let user set board size and such
+fn set_size () -> (usize, usize, usize) {
+        let mut width = String::new();
+    let mut height = String::new();
+    let mut bombs = String::new();
 
+    println!("Set width of board");
+    io::stdin()
+        .read_line(&mut width)
+        .expect("Failed to read line");
+    
+    println!("Set height of board");
+    io::stdin()
+        .read_line(&mut height)
+        .expect("Failed to read line");
+
+    println!("Set number of bombs");
+    io::stdin()
+        .read_line(&mut bombs)
+        .expect("Failed to read line");
+
+    let width: usize = width.trim().parse().unwrap();
+    let height: usize = height.trim().parse().unwrap();
+    let bombs: usize = bombs.trim().parse().unwrap();
+
+    (width, height, bombs)
+}
 //Given x, y and bombs: Create a tilemap
 fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
     use Babylib::Vec2d;
