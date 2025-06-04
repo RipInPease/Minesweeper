@@ -5,7 +5,7 @@ use crossterm::{self, QueueableCommand};
 use crossterm::event::{self, read, poll, Event, KeyCode, KeyModifiers};
 use crossterm::terminal::{self, Clear, ClearType};
 use crossterm::cursor::{self, MoveTo};
-use crossterm::style::{self, Print, StyledContent, Stylize};
+use crossterm::style::{self, Print, SetAttribute, StyledContent, Stylize, Attribute};
 
 
 
@@ -52,6 +52,7 @@ fn main() {
                     KeyCode::Enter => if tiles[cursor.0 as usize][cursor.1 as usize].opened 
                                             {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
                                       else  {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())},
+                    KeyCode::Char('f') => toggle_flag(&mut tiles, cursor.0.into(), cursor.1.into()),
                     KeyCode::Char('c') => if key_event.modifiers.contains(KeyModifiers::CONTROL) {die("You quit")} //CTRL+C to quit,
                     _ => (),
                     },
@@ -253,9 +254,15 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
         for x in 0..width {
             stdout.queue(MoveTo(x, y)).unwrap();
 
+            if x == cursor.0 && y == cursor.1 {
+                stdout.queue(SetAttribute(Attribute::Underlined)).unwrap();
+            } else {
+                stdout.queue(SetAttribute(Attribute::Reset)).unwrap();
+            }
+
             if tiles[x as usize][y as usize].opened {
                 match tiles[x as usize][y as usize].surrounding_bombs {
-                    0 => stdout.queue(Print("0".blue().on_dark_grey())).unwrap(),
+                    0 => stdout.queue(Print(" ".on_dark_grey())).unwrap(),
                     1 => stdout.queue(Print("1".blue().on_dark_grey())).unwrap(),
                     2 => stdout.queue(Print("2".green().on_dark_grey())).unwrap(),
                     3 => stdout.queue(Print("3".red().on_dark_grey())).unwrap(),
@@ -265,6 +272,10 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
                     7 => stdout.queue(Print("7".black().on_dark_grey())).unwrap(),
                     _ => stdout.queue(Print("8".yellow().on_dark_grey())).unwrap(),
                 };
+            } else if tiles[x as usize][y as usize].flagged {
+                stdout
+                .queue(MoveTo(x, y)).unwrap()
+                .queue(Print("-".red().on_dark_grey())).unwrap();
             } else {
                 stdout
                 .queue(MoveTo(x, y)).unwrap()
@@ -273,9 +284,9 @@ fn draw_page(tiles: &Vec<Vec<Tile>>, cursor: &(u16, u16)) {
         }
     }
 
-    stdout
-            .queue(MoveTo(cursor.0, cursor.1)).unwrap()
-            .queue(Print("-".blue().on_dark_grey())).unwrap();
+    //stdout
+    //        .queue(MoveTo(cursor.0, cursor.1)).unwrap()
+    //        .queue(Print("-".blue().on_dark_grey())).unwrap();
 
     stdout.flush().unwrap();
 }
