@@ -64,8 +64,6 @@ fn main() {
         
         }
 
-        //print_tiles(&tiles);
-
         draw_page(&tiles, &cursor);
 
         sleep(Duration::from_millis(16));
@@ -269,34 +267,6 @@ fn chord(tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
         }
     }
 
-}
-
-//print tiles to terminal
-fn print_tiles (tiles: &Vec<Vec<Tile>>) {
-    let width = tiles.len();
-    let height = tiles[0].len();
-
-    //print if tile is bomb or safe
-    for y_index in 0..height {
-      for x_index in 0..width {
-          if tiles[x_index][y_index].is_bomb {
-            print!("1 ");
-          } else {
-            print!("0 ");
-          }
-      }
-      println!("");
-    }
-
-    println!("");
-
-    //print surrounding bombs
-    for y_index in 0..height {
-        for x_index in 0..width {
-          print!("{} ", tiles[x_index][y_index].surrounding_bombs)
-          }    
-     println!("");
-    }
 }
 
 //Draw page to terminal
