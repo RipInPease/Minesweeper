@@ -6,6 +6,7 @@ use crossterm::event::{self, read, poll, Event, KeyCode, KeyModifiers};
 use crossterm::terminal::{self, Clear, ClearType};
 use crossterm::cursor::{self, MoveTo};
 use crossterm::style::{self, Print, SetAttribute, StyledContent, Stylize, Attribute};
+use rand::distr::slice::Choose;
 
 
 
@@ -73,28 +74,55 @@ fn main() {
 
 //Let user set board size and such
 fn set_size () -> (usize, usize, usize) {
-        let mut width = String::new();
-    let mut height = String::new();
-    let mut bombs = String::new();
+        
+    let width:usize = loop {
+        let mut buffer = String::new();
 
-    println!("Set width of board");
-    io::stdin()
-        .read_line(&mut width)
-        .expect("Failed to read line");
-    
-    println!("Set height of board");
-    io::stdin()
-        .read_line(&mut height)
-        .expect("Failed to read line");
+        println!("Set width of board");
+        io::stdin()
+            .read_line(&mut buffer)
+            .expect("Failed to read line");
 
-    println!("Set number of bombs");
-    io::stdin()
-        .read_line(&mut bombs)
-        .expect("Failed to read line");
+        match buffer.trim().parse::<usize>() {
+            Ok(f) => break(f),
+            Err(e) => (),
+        };
 
-    let width: usize = width.trim().parse().unwrap();
-    let height: usize = height.trim().parse().unwrap();
-    let bombs: usize = bombs.trim().parse().unwrap();
+        println!("Enter a number, dumbass");
+    };
+
+    let height:usize = loop {
+        let mut buffer = String::new();
+
+        println!("Set height of board");
+        io::stdin()
+            .read_line(&mut buffer)
+            .expect("Failed to read line");
+
+        match buffer.trim().parse::<usize>() {
+            Ok(f) => break(f),
+            Err(e) => (),
+        };
+
+        println!("Enter a number, dumbass");
+    };
+
+    let bombs:usize = loop {
+        let mut buffer = String::new();
+
+        println!("Set number of bombs");
+        io::stdin()
+            .read_line(&mut buffer)
+            .expect("Failed to read line");
+
+        match buffer.trim().parse::<usize>() {
+            Ok(f) => break(f),
+            Err(e) => (),
+        };
+
+        println!("Enter a number, dumbass");
+    };
+
 
     (width, height, bombs)
 }
