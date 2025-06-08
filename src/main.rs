@@ -202,6 +202,9 @@ fn open_tile (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
 
 //Flag tile, increment surrounding_flags of surrounding tiles
 fn toggle_flag (tiles: &mut Vec<Vec<Tile>>, x: usize, y: usize) {
+    //Don't set as flag if tile is already opened
+    if tiles[x][y].opened {return};
+
     //Toggle flagged state
     tiles[x][y].flagged = !tiles[x][y].flagged;
 
