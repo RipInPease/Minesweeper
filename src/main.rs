@@ -2,14 +2,10 @@ use std::io::{self, Write, stdout};
 use std::thread::sleep;
 use core::time::Duration;
 use crossterm::{self, QueueableCommand};
-use crossterm::event::{self, read, poll, Event, KeyCode, KeyModifiers};
+use crossterm::event::{read, poll, Event, KeyCode, KeyModifiers};
 use crossterm::terminal::{self, Clear, ClearType};
 use crossterm::cursor::{self, MoveTo};
-use crossterm::style::{self, Print, SetAttribute, StyledContent, Stylize, Attribute};
-use rand::distr::slice::Choose;
-
-
-
+use crossterm::style::{Print, SetAttribute, Stylize, Attribute};
 
 
 
@@ -96,8 +92,8 @@ fn set_size () -> (usize, usize, usize) {
             .expect("Failed to read line");
 
         match buffer.trim().parse::<usize>() {
-            Ok(f) => break(f),
-            Err(e) => (),
+            Ok(f) => break f,
+            Err(_e) => (),
         };
 
         println!("Enter a number, dumbass");
@@ -112,8 +108,8 @@ fn set_size () -> (usize, usize, usize) {
             .expect("Failed to read line");
 
         match buffer.trim().parse::<usize>() {
-            Ok(f) => break(f),
-            Err(e) => (),
+            Ok(f) => break f,
+            Err(_e) => (),
         };
 
         println!("Enter a number, dumbass");
@@ -128,8 +124,8 @@ fn set_size () -> (usize, usize, usize) {
             .expect("Failed to read line");
 
         match buffer.trim().parse::<usize>() {
-            Ok(f) => break(f),
-            Err(e) => (),
+            Ok(f) => break f,
+            Err(_e) => (),
         };
 
         println!("Enter a number, dumbass");
@@ -140,7 +136,6 @@ fn set_size () -> (usize, usize, usize) {
 }
 //Given x, y and bombs: Create a tilemap
 fn init_board (tiles: &mut Vec<Vec<Tile>>, bombs: usize) {
-    use Babylib::Vec2d;
     use rand::random_range;
 
     let width = tiles.len();
