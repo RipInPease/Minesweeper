@@ -142,7 +142,7 @@ fn init_board (tiles: &mut Vec<Vec<Tile>>, bombs: usize) {
     let height = tiles[0].len();
     let mut used_bombs = bombs;
 
-    if bombs > width * height {
+    if bombs >= width * height {
         used_bombs = (width * height)-1;
 
         println!{"You chose more bombs than can fit in the grid, bombs set to 1 less than grid size"}
