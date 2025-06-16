@@ -40,8 +40,13 @@ fn main() {
 
   
 
-    let mut tiles = init_board(width, height, bombs);
+    let mut tiles = Babylib::Vec2d::new(width, height, Tile::default());
     let mut cursor: (u16, u16) = (0, 0);
+    let mut first_open = true;
+
+    //KeyCode::Enter => if tiles[cursor.0 as usize][cursor.1 as usize].opened 
+    //                                        {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
+    //                                  else  {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())}
     
     loop {
         if poll(Duration::ZERO).unwrap() {
@@ -52,9 +57,18 @@ fn main() {
                     KeyCode::Down => if cursor.1 < tiles[0].len() as u16 -1 {cursor.1 += 1},
                     KeyCode::Left => if cursor.0 > 0 {cursor.0 -= 1},
                     KeyCode::Right => if cursor.0 < tiles.len() as u16 -1 {cursor.0 += 1},
-                    KeyCode::Enter => if tiles[cursor.0 as usize][cursor.1 as usize].opened 
-                                            {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
-                                      else  {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())},
+                    KeyCode::Enter =>   //First check if this is the first tile you open
+                                        //If you press enter on a opened tile, you chord
+                                        {if first_open {
+                                            tiles[cursor.0 as usize][cursor.1 as usize].opened = true;
+                                            init_board(&mut tiles, bombs);
+                                            first_open = false;
+                                        }
+
+                                        if tiles[cursor.0 as usize][cursor.1 as usize].opened 
+                                             {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
+                                        else {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())}},
+
                     KeyCode::Char('f') => toggle_flag(&mut tiles, cursor.0.into(), cursor.1.into()),
                     KeyCode::Char('c') => if key_event.modifiers.contains(KeyModifiers::CONTROL) {die("You quit")} //CTRL+C to quit,
                     _ => (),
@@ -125,10 +139,12 @@ fn set_size () -> (usize, usize, usize) {
     (width, height, bombs)
 }
 //Given x, y and bombs: Create a tilemap
-fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
+fn init_board (tiles: &mut Vec<Vec<Tile>>, bombs: usize) {
     use Babylib::Vec2d;
     use rand::random_range;
 
+    let width = tiles.len();
+    let height = tiles[0].len();
     let mut used_bombs = bombs;
 
     if bombs > width * height {
@@ -136,22 +152,22 @@ fn init_board (width: usize, height: usize, bombs: usize) -> Vec<Vec<Tile>>{
 
         println!{"You chose more bombs than can fit in the grid, bombs set to 1 less than grid size"}
     }
+
     let density = used_bombs as f32 / ((width as f32) * (height as f32));
-    let mut tiles = Vec2d::new::<Tile>(width.into(), height.into(),Tile::default());
 
     let mut current_bombs = 0;
     while current_bombs < used_bombs {
         for x in 0..width {
         for y in 0..height {
-            if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && current_bombs < used_bombs {
-                set_tile_as_bomb(&mut tiles, x, y);
+            if density > random_range(0.0..1.0) && tiles[x][y].is_bomb == false && tiles[x][y].opened == false && current_bombs < used_bombs {
+                set_tile_as_bomb(tiles, x, y);
                 current_bombs += 1;
             }
         }
         }
     }
 
-    tiles
+    
 }
 
 //Set tile as bomb and increment surrounding_bombs of surrounding tiles
