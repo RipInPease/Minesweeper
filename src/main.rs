@@ -40,9 +40,6 @@ fn main() {
     let mut cursor: (u16, u16) = (0, 0);
     let mut first_open = true;
 
-    //KeyCode::Enter => if tiles[cursor.0 as usize][cursor.1 as usize].opened 
-    //                                        {chord(&mut tiles, cursor.0.into(), cursor.1.into())}
-    //                                  else  {open_tile(&mut tiles, cursor.0.into(), cursor.1.into())}
     
     loop {
         if poll(Duration::ZERO).unwrap() {
